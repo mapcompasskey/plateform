@@ -1,0 +1,78 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Phaser: Simple Platformer</title>
+    <!--script src="game/phaser-v2.0.1.min.js"></script-->
+    <!--script src="game/phaser-v1.1.6.js"></script-->
+    <script src="game/phaser-v2.0.7.js"></script>
+    <script src="game/Boot.js"></script>
+    <script src="game/Preloader.js"></script>
+    <script src="game/MainMenu.js"></script>
+    <script src="game/Game.js"></script>
+    <script src="game/Player.js"></script>
+    <style>
+        body {
+            margin: 20px;
+            background-color: #333;
+        }
+        #playhead {
+            cursor: pointer;
+            position: absolute;
+            left: 10px;
+            top: 10px;
+            width: 50px;
+            height: 50px;
+            border: 1px solid #fff;
+            background-repeat: no-repeat;
+        }
+        #playhead.paused {
+            background-position: -50px 0;
+            background-image: url('assets/playhead-buttons.png');
+        }
+        #playhead.playing {
+            background-position: 0 0;
+            background-image: url('assets/playhead-buttons.png');
+        }
+    </style>
+</head>
+<body>
+    <div id="playhead" class="playing"></div>
+    <script type="text/javascript">
+        window.onload = function () {
+        
+            // create the Phaser game
+            var game = new Phaser.Game(800, 600, Phaser.AUTO);
+            
+            // add the game states
+            game.state.add('Boot', BasicGame.Boot);
+            game.state.add('Preloader', BasicGame.Preloader);
+            game.state.add('MainMenu', BasicGame.MainMenu);
+            game.state.add('Game', BasicGame.Game);
+            
+            // now start the boot state
+            game.state.start('Boot');
+            
+            // pause/unpause the game
+            function togglePauseState() {
+            
+                if (game.paused)
+                {
+                    game.paused = false;
+                    pauseBtn.className = 'playing';
+                }
+                else
+                {
+                    game.paused = true;
+                    pauseBtn.className = 'paused';
+                }
+                
+            }
+            var pauseBtn = document.getElementById('playhead') || {};
+            pauseBtn.onclick = function () { togglePauseState(); };
+            pauseBtn.addEventListener('touchstart', function (e) { togglePauseState(); });
+            
+        };
+    </script>
+</body>
+</html>
