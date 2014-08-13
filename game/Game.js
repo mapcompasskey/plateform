@@ -1,7 +1,7 @@
 
 BasicGame.Game = function (game) {
     
-	// When a State is added to Phaser it automatically has the following properties set on it, even if they already exist:
+    // When a State is added to Phaser it automatically has the following properties set on it, even if they already exist:
     
     this.game;		// a reference to the currently running game
     this.add;		// used to add sprites, text, groups, etc
@@ -27,7 +27,7 @@ BasicGame.Game = function (game) {
 
 BasicGame.Game.prototype = {
     
-	create: function () {
+    create: function () {
         
         // reset properties
         this.map;
@@ -104,7 +104,8 @@ BasicGame.Game.prototype = {
         var coin = this.coins.create((this.tileSize*12), (this.tileSize*3-14), 'coin');
         
         // coin score text
-        this.coinScoreText = this.add.text(4, 4, '$0', { fontSize: '12px', fill: '#000' });
+        this.coinScoreText = this.add.text(10, 10, '$0', { fontSize: '12px', fill: '#fff' });
+        this.coinScoreText.fixedToCamera = true;
         
         // cursor key controls
         this.game.cursors = this.input.keyboard.createCursorKeys();
@@ -117,9 +118,9 @@ BasicGame.Game.prototype = {
         this.camera.follow(this.player);
         //this.camera.deadzone = new Phaser.Rectangle(100, 100, 600, 400);
         
-	},
+    },
     
-	update: function () {
+    update: function () {
         
         // we are looking for collisions between the hero and the tiles
         this.physics.arcade.collide(this.player, this.layer);
@@ -127,17 +128,17 @@ BasicGame.Game.prototype = {
         // player / coin collision
         this.physics.arcade.overlap(this.player, this.coins, this.collectCoin, null, this);
         
-	},
+    },
     
-	quitGame: function (pointer) {
+    quitGame: function (pointer) {
         
-		// Here you should destroy anything you no longer need.
-		// Stop music, delete sprites, purge caches, free resources, all that good stuff.
+        // Here you should destroy anything you no longer need.
+        // Stop music, delete sprites, purge caches, free resources, all that good stuff.
         
-		// Then let's go back to the main menu.
-		this.state.start('MainMenu');
+        // Then let's go back to the main menu.
+        this.state.start('MainMenu');
         
-	},
+    },
     
     collectCoin: function (player, coin) {
         

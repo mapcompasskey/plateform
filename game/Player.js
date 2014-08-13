@@ -19,24 +19,30 @@ Player = function (game, x, y ) {
     
     Phaser.Sprite.call(this, game, x, y, key);
     
-    this.walkSpeed = 150;
-    this.jumpSpeed = 250;
+    this._walkSpeed = 150;
+    this._jumpSpeed = 350;
+    this._gravity = 800;
     
-    this.walking = false;
-    this.jumping = false;
-    this.falling = false;
-    this.hurting = false;
-    this.dying = false;
+    this._walking = false;
+    this._jumping = false;
+    this._falling = false;
+    this._hurting = false;
+    this._dying = false;
     
     // enable physics on the player
     game.physics.arcade.enable(this);
     
+    // set offset
+    this.body.setSize(16, 28, 7, 2);
+    
     // player physics properties
-    this.body.gravity.y = 300;
+    this.body.gravity.y = this._gravity;
     this.body.collideWorldBounds = true;    
     
     // player animations
     this.animations.add('idle', [0]);
+    this.animations.add('jump', [3]);
+    this.animations.add('fall', [4]);
     this.animations.add('walk', [1, 0, 2, 0], 10, true);
     
 };
@@ -47,6 +53,7 @@ Player.ASSETS = [
 
 Player.prototype = Object.create(Phaser.Sprite.prototype);
 Player.prototype.constructor = Player;
+//Player.prototype.extending = Phaser.Sprite.prototype;
 
 /**
 * Internal function called by the World update cycle
@@ -58,7 +65,15 @@ Player.prototype.update = function () {
     
     this.checkStatus();
     
+    // draw bounding box
+    this.game.debug.body(this, 'rgba(255,0,0,0.8)', false);
+    
 };
+
+//Player.prototype.postUpdate = function() {
+    //Phaser.Sprite.prototype.postUpdate.call(this);
+    //this.extending.postUpdate.call(this);
+//};
 
 Player.prototype.checkStatus = function () {
     
@@ -70,9 +85,10 @@ Player.prototype.checkStatus = function () {
 
 Player.prototype.isJumping = function() {
     
-    if ( this.hurting || this.dying ) {
-        this.jumping = false;
-        this.falling = false;
+    if (this._hurting || this._dying)
+    {
+        this._jumping = false;
+        this._falling = false;
         return;
     }
     
@@ -80,58 +96,58 @@ Player.prototype.isJumping = function() {
     //if (this.body.onFloor() && this.game.cursors.up.isDown)
     if (this.body.onFloor() && this.game.cursors.up.justPressed())
     {
-        this.body.velocity.y = -this.jumpSpeed;
-        this.jumping = true;
+        this.body.velocity.y = -this._jumpSpeed;
+        this._jumping = true;
         return;
-    }
-    
-    // reduce jumping height
-    //if (this.jumping &&  this.game.cursors.up.isUp)
-    if (this.jumping &&  this.game.cursors.up.justReleased())
-    {
-        this.body.velocity.y = ( this.body.velocity.y / 2 );
     }
     
     // if falling
     if ( ! this.body.onFloor() && this.body.velocity.y > 0)
     {
-        this.falling = true;
-        return;
+        this._falling = true;
+    }
+    
+    // reduce jumping height
+    //if (this._jumping &&  this.game.cursors.up.isUp)
+    if (this._jumping &&  ! this._falling && this.game.cursors.up.justReleased())
+    {
+        this.body.velocity.y = (this.body.velocity.y / 4);
     }
     
     // if standing on something while jumping/falling
-    if (this.body.onFloor() && (this.jumping || this.falling))
+    if (this.body.onFloor() && (this._jumping || this._falling))
     {
-        this.jumping = false;
-        this.falling = false;
+        this._jumping = false;
+        this._falling = false;
     }
     
 };
 
 Player.prototype.isMoving = function() {
     
-    if ( this.hurting || this.dying ) {
-        this.walking = false;
+    if (this._hurting || this._dying)
+    {
+        this._walking = false;
         return;
     }
     
     // setting player horizontal velocity to zero
     this.body.velocity.x = 0;
-    this.walking = false;
+    this._walking = false;
     
     if (this.game.cursors)
     {
         // walking left
         if (this.game.cursors.left.isDown)
         {
-            this.body.velocity.x = -this.walkSpeed;
-            this.walking = true;
+            this.body.velocity.x = -this._walkSpeed;
+            this._walking = true;
         }
         // walking right
         else if (this.game.cursors.right.isDown)
         {
-            this.body.velocity.x = this.walkSpeed;
-            this.walking = true;
+            this.body.velocity.x = this._walkSpeed;
+            this._walking = true;
         }
     }
     
@@ -139,7 +155,15 @@ Player.prototype.isMoving = function() {
 
 Player.prototype.animate = function() {
 
-    if (this.walking)
+    if (this._falling)
+    {
+        this.animations.play('fall');
+    }
+    else if (this._jumping)
+    {
+        this.animations.play('jump');
+    }
+    else if (this._walking)
     {
         this.animations.play('walk');
     }
