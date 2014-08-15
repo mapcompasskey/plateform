@@ -21,14 +21,13 @@ BasicGame.Preloader.prototype = {
         
         // load Game.js assets
         this.load.image('imageTiles', 'assets/tiles.png');
-        this.load.image('coin', 'assets/coin.png');
         this.load.tilemap('tilemapLevel_JSON', 'assets/level.json', null, Phaser.Tilemap.TILED_JSON);
         this.load.tilemap('tilemapLevel_CSV', 'assets/level.csv', null, Phaser.Tilemap.CSV);
-        
         this.loadAssets(Player.ASSETS);
-        //this.load.spritesheet('spritesheetPlayer', 'assets/player.png', 30, 30);
+        this.loadAssets(Coin.ASSETS);
 	},
     
+    // load assets used by custom game objects
     loadAssets: function ( assets ) {
     
         if (assets !== undefined)
@@ -44,6 +43,13 @@ BasicGame.Preloader.prototype = {
                     if (asset.type == 'spritesheet')
                     {
                         this.load.spritesheet(asset.key, asset.src, asset.sheetWidth, asset.sheetHeight);
+                    }
+                    
+                    // load Image
+                    // {type:'image', key:'coin', src:'assets/coin.png'}
+                    else if (asset.type == 'image')
+                    {
+                        this.load.image(asset.key, asset.src);
                     }
                     
                 }

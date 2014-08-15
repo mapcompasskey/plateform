@@ -29,6 +29,9 @@ BasicGame.Game.prototype = {
     
     create: function () {
         
+        // define game constancts
+        this.TILESIZE = 32;
+        
         // reset properties
         this.map;
         this.layer;
@@ -37,7 +40,6 @@ BasicGame.Game.prototype = {
         this.coinScore = 0;
         this.coinScoreText;
         this.cursor;
-        this.tileSize = 32;
         
         this.stage.backgroundColor = '#000';
         
@@ -86,8 +88,10 @@ BasicGame.Game.prototype = {
         }
         
         // add the player
-        //this.player = this.add.sprite((this.tileSize*4), (this.tileSize*3-30), 'spritesheetPlayer');
-        this.player = new Player(this.game, (this.tileSize*4), (this.tileSize*3-30));
+        //this.player = this.add.sprite((this.TILESIZE*4), (this.TILESIZE*3-30), 'spritesheetPlayer');
+        var xPos = (this.TILESIZE * 4);
+        var yPos = (this.TILESIZE * 3 - 30);
+        this.player = new Player(this.game, xPos, yPos);
         this.add.existing(this.player);
         
         // add a group of coins
@@ -97,11 +101,14 @@ BasicGame.Game.prototype = {
         this.coins.enableBody = true;
         
         // add some coins
-        var coin = this.coins.create((this.tileSize*4), (this.tileSize*3-14), 'coin');
-        var coin = this.coins.create((this.tileSize*6), (this.tileSize*3-14), 'coin');
-        var coin = this.coins.create((this.tileSize*8), (this.tileSize*3-14), 'coin');
-        var coin = this.coins.create((this.tileSize*10), (this.tileSize*3-14), 'coin');
-        var coin = this.coins.create((this.tileSize*12), (this.tileSize*3-14), 'coin');
+        //var coin = this.coins.create((this.TILESIZE*16), (this.TILESIZE*7-12), 'imageCoin');
+        var xPos, yPos = 0;
+        for (var i = 0; i < 7; i++)
+        {
+            xPos = (this.TILESIZE * (i * 2 + 16));
+            yPos = (this.TILESIZE * 7 - 14);
+            this.coins.add(new Coin(this.game, xPos, yPos), true);
+        }
         
         // coin score text
         this.coinScoreText = this.add.text(10, 10, '$0', { fontSize: '12px', fill: '#fff' });
@@ -122,7 +129,7 @@ BasicGame.Game.prototype = {
     
     update: function () {
         
-        // we are looking for collisions between the hero and the tiles
+        // player / level collision
         this.physics.arcade.collide(this.player, this.layer);
         
         // player / coin collision

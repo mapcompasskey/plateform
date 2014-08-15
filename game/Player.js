@@ -11,7 +11,7 @@
 * @param {number} y - The y coordinate (in world space) to position the Sprite at.
 * @param {string|Phaser.RenderTexture|Phaser.BitmapData|PIXI.Texture} key - This is the image or texture used by the Sprite during rendering. It can be a string which is a reference to the Cache entry, or an instance of a RenderTexture or PIXI.Texture.
 */
-Player = function (game, x, y ) {
+Player = function (game, x, y) {
     
     x = x || 0;
     y = y || 0;
@@ -75,6 +75,12 @@ Player.prototype.update = function () {
     //this.extending.postUpdate.call(this);
 //};
 
+/**
+* Check the current status of the Player
+*
+* @method Player#checkStatus
+* @memberof Player
+*/
 Player.prototype.checkStatus = function () {
     
     this.isJumping();
@@ -83,6 +89,12 @@ Player.prototype.checkStatus = function () {
     
 };
 
+/**
+* Check if the Player is jumping
+*
+* @method Player#isJumping
+* @memberof Player
+*/
 Player.prototype.isJumping = function() {
     
     if (this._hurting || this._dying)
@@ -123,6 +135,12 @@ Player.prototype.isJumping = function() {
     
 };
 
+/**
+* Check if the Player is moving
+*
+* @method Player#isMoving
+* @memberof Player
+*/
 Player.prototype.isMoving = function() {
     
     if (this._hurting || this._dying)
@@ -153,6 +171,13 @@ Player.prototype.isMoving = function() {
     
 };
 
+
+/**
+* Update the Player animation
+*
+* @method Player#animate
+* @memberof Player
+*/
 Player.prototype.animate = function() {
 
     if (this._falling)
