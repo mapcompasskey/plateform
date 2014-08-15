@@ -53,7 +53,6 @@ Player.ASSETS = [
 
 Player.prototype = Object.create(Phaser.Sprite.prototype);
 Player.prototype.constructor = Player;
-//Player.prototype.extending = Phaser.Sprite.prototype;
 
 /**
 * Internal function called by the World update cycle
@@ -66,13 +65,21 @@ Player.prototype.update = function () {
     this.checkStatus();
     
     // draw bounding box
-    this.game.debug.body(this, 'rgba(255,0,0,0.8)', false);
+    if (SHOW_BOUNDING_BOXES)
+    {
+        this.game.debug.body(this, 'rgba(255,0,0,0.8)', false);
+    }
     
 };
 
+/**
+* Internal function called by the World postUpdate cycle.
+*
+* @method Player#postUpdate
+* @memberof Player
+*/
 //Player.prototype.postUpdate = function() {
     //Phaser.Sprite.prototype.postUpdate.call(this);
-    //this.extending.postUpdate.call(this);
 //};
 
 /**
@@ -105,8 +112,7 @@ Player.prototype.isJumping = function() {
     }
     
     // if standing and just pressed "UP" button
-    //if (this.body.onFloor() && this.game.cursors.up.isDown)
-    if (this.body.onFloor() && this.game.cursors.up.justPressed())
+    if (this.body.onFloor() && KEY_JUMP.justPressed())
     {
         this.body.velocity.y = -this._jumpSpeed;
         this._jumping = true;
@@ -120,8 +126,7 @@ Player.prototype.isJumping = function() {
     }
     
     // reduce jumping height
-    //if (this._jumping &&  this.game.cursors.up.isUp)
-    if (this._jumping &&  ! this._falling && this.game.cursors.up.justReleased())
+    if (this._jumping && ! this._falling && KEY_JUMP.justReleased())
     {
         this.body.velocity.y = (this.body.velocity.y / 4);
     }
@@ -149,28 +154,25 @@ Player.prototype.isMoving = function() {
         return;
     }
     
-    // setting player horizontal velocity to zero
-    this.body.velocity.x = 0;
-    this._walking = false;
-    
-    if (this.game.cursors)
+    // if walking left
+    if (KEY_LEFT.isDown)
     {
-        // walking left
-        if (this.game.cursors.left.isDown)
-        {
-            this.body.velocity.x = -this._walkSpeed;
-            this._walking = true;
-        }
-        // walking right
-        else if (this.game.cursors.right.isDown)
-        {
-            this.body.velocity.x = this._walkSpeed;
-            this._walking = true;
-        }
+        this.body.velocity.x = -this._walkSpeed;
+        this._walking = true;
+    }
+    // else, if walking right
+    else if (KEY_RIGHT.isDown)
+    {
+        this.body.velocity.x = this._walkSpeed;
+        this._walking = true;
+    }
+    // else, not moving
+    else {
+        this.body.velocity.x = 0;
+        this._walking = false;
     }
     
 };
-
 
 /**
 * Update the Player animation
@@ -196,5 +198,17 @@ Player.prototype.animate = function() {
     {
         this.animations.play('idle');
     }
+    
+};
+
+/**
+* Called during object collision
+*
+* @method Player#collideWith
+* @memberof Player
+* @param {object} - The object that is colliding with this Sprite.
+* @param {Phaser.Game} - The Phaser.Game object calling the method.
+*/
+Player.prototype.collideWith = function(other, caller) {
     
 };

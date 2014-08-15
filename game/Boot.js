@@ -13,6 +13,13 @@ BasicGame.Boot.prototype = {
     
     create: function () {
         
+        // define constancts
+        TILESIZE = 32;
+        KEY_LEFT = this.input.keyboard.addKey(Phaser.Keyboard.LEFT);
+        KEY_RIGHT = this.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
+        KEY_JUMP = this.input.keyboard.addKey(Phaser.Keyboard.X);
+        SHOW_BOUNDING_BOXES = false;
+        
         // multi-touch support not required
         this.input.maxPointers = 1;
         

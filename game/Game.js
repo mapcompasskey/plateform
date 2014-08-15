@@ -28,10 +28,7 @@ BasicGame.Game = function (game) {
 BasicGame.Game.prototype = {
     
     create: function () {
-        
-        // define game constancts
-        this.TILESIZE = 32;
-        
+            
         // reset properties
         this.map;
         this.layer;
@@ -87,35 +84,14 @@ BasicGame.Game.prototype = {
             this.layer.resizeWorld();
         }
         
+        // add the coins
+        this.addCoins();
+        
         // add the player
-        //this.player = this.add.sprite((this.TILESIZE*4), (this.TILESIZE*3-30), 'spritesheetPlayer');
-        var xPos = (this.TILESIZE * 4);
-        var yPos = (this.TILESIZE * 3 - 30);
-        this.player = new Player(this.game, xPos, yPos);
-        this.add.existing(this.player);
+        this.addPlayer();
         
-        // add a group of coins
-        this.coins = this.add.group();
-        
-        // enable physics on coins
-        this.coins.enableBody = true;
-        
-        // add some coins
-        //var coin = this.coins.create((this.TILESIZE*16), (this.TILESIZE*7-12), 'imageCoin');
-        var xPos, yPos = 0;
-        for (var i = 0; i < 7; i++)
-        {
-            xPos = (this.TILESIZE * (i * 2 + 16));
-            yPos = (this.TILESIZE * 7 - 14);
-            this.coins.add(new Coin(this.game, xPos, yPos), true);
-        }
-        
-        // coin score text
-        this.coinScoreText = this.add.text(10, 10, '$0', { fontSize: '12px', fill: '#fff' });
-        this.coinScoreText.fixedToCamera = true;
-        
-        // cursor key controls
-        this.game.cursors = this.input.keyboard.createCursorKeys();
+        // add the HUD
+        this.addHUD();
         
         // Camera: http://docs.phaser.io/Camera.js.html
         // The deadzone is a Rectangle that defines the limits at which the camera will start to scroll
@@ -133,33 +109,73 @@ BasicGame.Game.prototype = {
         this.physics.arcade.collide(this.player, this.layer);
         
         // player / coin collision
-        this.physics.arcade.overlap(this.player, this.coins, this.collectCoin, null, this);
+        this.physics.arcade.overlap(this.player, this.coins, this.resolveCollisions, null, this);
         
     },
     
     quitGame: function (pointer) {
-        
-        // Here you should destroy anything you no longer need.
-        // Stop music, delete sprites, purge caches, free resources, all that good stuff.
         
         // Then let's go back to the main menu.
         this.state.start('MainMenu');
         
     },
     
-    collectCoin: function (player, coin) {
+    addCoins: function() {
+         
+        // add a group of coins
+        this.coins = this.add.group();
         
-        // remove the coin
-        coin.kill();
+        // enable physics on coins
+        this.coins.enableBody = true;
         
-        // update the score
+        // add some coins
+        var xPos, yPos = 0;
+        for (var i = 0; i < 7; i++)
+        {
+            xPos = (TILESIZE * (i * 2 + 16));
+            yPos = (TILESIZE * 7 - 14);
+            this.coins.add(new Coin(this.game, xPos, yPos), true);
+        }
+        
+    },
+    
+    addPlayer: function () {
+        
+        // add the player
+        //this.player = this.add.sprite((TILESIZE*4), (TILESIZE*3-30), 'spritesheetPlayer');
+        var xPos = (TILESIZE * 4);
+        var yPos = (TILESIZE * 3 - 30);
+        this.player = new Player(this.game, xPos, yPos);
+        this.add.existing(this.player);
+        PLAYER = this.player;
+        
+    },
+    
+    addHUD: function() {
+        
+        // coin score text
+        this.coinScoreText = this.add.text(10, 10, '$0', { fontSize: '12px', fill: '#fff' });
+        this.coinScoreText.fixedToCamera = true;
+        
+    },
+    
+    resolveCollisions: function (obj1, obj2) {
+    
+        if (obj1.collideWith)
+        {
+            obj1.collideWith(obj2, this);
+        }
+        if (obj2.collideWith)
+        {
+            obj2.collideWith(obj1, this);
+        }
+        
+    },
+    
+    coinCollected: function() {
+        
         this.coinScore += 10;
         this.coinScoreText.text = '$' + this.coinScore;
-        
-        //if (this.score >= 120)
-        //{
-            //this.quitGame();
-        //}
         
     },
     

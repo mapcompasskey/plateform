@@ -19,32 +19,6 @@ Coin = function (game, x, y) {
     
     Phaser.Sprite.call(this, game, x, y, key);
     
-    //this._walkSpeed = 150;
-    //this._jumpSpeed = 350;
-    //this._gravity = 800;
-    
-    //this._walking = false;
-    //this._jumping = false;
-    //this._falling = false;
-    //this._hurting = false;
-    //this._dying = false;
-    
-    // enable physics on the player
-    //game.physics.arcade.enable(this);
-    
-    // set offset
-    //this.body.setSize(16, 28, 7, 2);
-    
-    // player physics properties
-    //this.body.gravity.y = this._gravity;
-    //this.body.collideWorldBounds = true;    
-    
-    // player animations
-    //this.animations.add('idle', [0]);
-    //this.animations.add('jump', [3]);
-    //this.animations.add('fall', [4]);
-    //this.animations.add('walk', [1, 0, 2, 0], 10, true);
-    
 };
 
 Coin.ASSETS = [
@@ -53,7 +27,6 @@ Coin.ASSETS = [
 
 Coin.prototype = Object.create(Phaser.Sprite.prototype);
 Coin.prototype.constructor = Coin;
-//Player.prototype.extending = Phaser.Sprite.prototype;
 
 /**
 * Internal function called by the World update cycle
@@ -63,9 +36,31 @@ Coin.prototype.constructor = Coin;
 */
 Coin.prototype.update = function () {
     
-    //this.checkStatus();
-    
     // draw bounding box
-    //this.game.debug.body(this, 'rgba(255,0,0,0.8)', false);
+    if (SHOW_BOUNDING_BOXES)
+    {
+        this.game.debug.body(this, 'rgba(255,0,0,0.8)', false);
+    }
+    
+};
+
+/**
+* Called during object collision
+*
+* @method Coin#collideWith
+* @memberof Coin
+* @param {object} - The object that is colliding with this Sprite.
+* @param {Phaser.Game} - The Phaser.Game object calling the method.
+*/
+Coin.prototype.collideWith = function(other, caller) {
+
+    if (other === PLAYER)
+    {
+        // update the score
+        caller.coinCollected();
+        
+        // remove the coin
+        this.kill();
+    }
     
 };
