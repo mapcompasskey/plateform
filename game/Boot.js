@@ -24,7 +24,7 @@ BasicGame.Boot.prototype = {
         this.input.maxPointers = 1;
         
         // pause if the browser loses focus
-        this.stage.disableVisibilityChange = true;
+        this.stage.disableVisibilityChange = false;
         
         // if desktop mode
         if (this.game.device.desktop)

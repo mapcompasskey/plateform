@@ -22,7 +22,6 @@ BasicGame.Preloader.prototype = {
         // load Game.js assets
         this.load.image('imageTiles', 'assets/tiles.png');
         this.load.tilemap('tilemapLevel_JSON', 'assets/level.json', null, Phaser.Tilemap.TILED_JSON);
-        this.load.tilemap('tilemapLevel_CSV', 'assets/level.csv', null, Phaser.Tilemap.CSV);
         this.loadAssets(Player.ASSETS);
         this.loadAssets(Coin.ASSETS);
 	},
