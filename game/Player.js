@@ -37,7 +37,7 @@ Player = function (game, x, y) {
     
     // player physics properties
     this.body.gravity.y = this._gravity;
-    this.body.collideWorldBounds = true;    
+    //this.body.collideWorldBounds = true;    
     
     // player animations
     this.animations.add('idle', [0]);
@@ -93,6 +93,7 @@ Player.prototype.checkStatus = function () {
     this.isJumping();
     this.isMoving();
     this.animate();
+    this.checkPosition();
     
 };
 
@@ -210,5 +211,31 @@ Player.prototype.animate = function() {
 * @param {Phaser.Game} - The Phaser.Game object calling the method.
 */
 Player.prototype.collideWith = function(other, caller) {
+    
+};
+
+/**
+* Check if the Player is outside the World boundary
+*
+* @method Player#checkPosition
+* @memberof Player
+*/
+Player.prototype.checkPosition = function() {
+    
+    // if this sprite has moved off the world
+    if (this.x < this.game.world.bounds.x)
+    {
+        this.x = this.game.world.bounds.width - (this.body.width * 2);
+    }
+    else if ((this.x + this.body.width) > this.game.world.bounds.width)
+    {
+        this.x = this.body.width;
+    }
+    
+    // if this sprite has fallen out of the world
+    if (this.y > this.game.world.bounds.height)
+    {
+        this.y = 0;
+    }
     
 };

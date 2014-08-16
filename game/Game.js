@@ -86,7 +86,7 @@ BasicGame.Game.prototype = {
         this.map.addTilesetImage('tileset', 'imageTiles');
         
         // set tile collision
-        this.map.setCollision([1, 2]);
+        this.map.setCollision([1,2]);
         this.map.forEach(function (t) {
             if (t)
             {
