@@ -22,6 +22,7 @@ BasicGame.Boot.prototype = {
         GAME_LAYER = null;
         GAME_MAP = null;
         SHOW_BOUNDING_BOXES = true;
+        CURRENT_STATE = this;
         
         // multi-touch support not required
         this.input.maxPointers = 1;

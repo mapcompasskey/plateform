@@ -46,7 +46,6 @@ Player = function (game, x, y) {
     this.animations.add('fall', [5]);
     this.animations.add('walk', [1, 2, 3, 2], 5, true);
     
-    this.prevtilevalue = 0;
 };
 
 Player.ASSETS = [
@@ -65,12 +64,6 @@ Player.prototype.constructor = Player;
 Player.prototype.update = function () {
     
     this.checkStatus();
-    
-    // draw bounding box
-    if (SHOW_BOUNDING_BOXES)
-    {
-        this.game.debug.body(this, 'rgba(255,0,0,0.8)', false);
-    }
     
 };
 
@@ -92,10 +85,11 @@ Player.prototype.update = function () {
 */
 Player.prototype.checkStatus = function () {
     
+    this.checkPosition();
+    
     this.isJumping();
     this.isMoving();
     this.animate();
-    this.checkPosition();
     
 };
 

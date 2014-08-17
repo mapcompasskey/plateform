@@ -48,6 +48,7 @@ Enemy = function (game, x, y) {
     
     // start sprite walking
     this._walking = true;
+    
 };
 
 Enemy.ASSETS = [
@@ -66,12 +67,6 @@ Enemy.prototype.constructor = Enemy;
 Enemy.prototype.update = function () {
     
     this.checkStatus();
-    
-    // draw bounding box
-    if (SHOW_BOUNDING_BOXES)
-    {
-        this.game.debug.body(this, 'rgba(255,0,0,0.8)', false);
-    }
     
 };
 
@@ -214,40 +209,6 @@ Enemy.prototype.collideWith = function(other, caller) {
     
 };
 
-Enemy.prototype.layerCollision = function(layer, callback) {
-
-    //console.log(layer);
-    /*
-    if(layerHit.tile.index == 25 || layerHit.tile.index == 35 || layerHit.tile.index == 34 || layerHit.tile.index == 54 || 
-    layerHit.tile.index == 28 || layerHit.tile.index == 38 || layerHit.tile.index == 44 || layerHit.tile.index == 10)
-    {
-
-    if (enemyHit.body.velocity.x == forward && allowedToTurn == true)
-    {
-    timeWhenTurned = this.game.time.now;
-    allowedToTurn = false;
-    enemyHit.body.velocity.x = backwards;
-
-    }
-
-    else if (enemyHit.body.velocity.x == backwards && allowedToTurn == true)
-    {
-    timeWhenTurned = this.game.time.now;
-    allowedToTurn = false;
-    enemyHit.body.velocity.x = forward;
-
-    }
-    }
-
-    timeSinceTurned = this.game.time.elapsedSecondsSince(timeWhenTurned);
-
-    if(timeSinceTurned > 0.06)
-    {
-    allowedToTurn = true;
-    }
-    */
-};
-
 /**
 * Check if the Enemy is outside the World boundary
 *
@@ -267,11 +228,9 @@ Enemy.prototype.checkPosition = function() {
     }
     
     // if walked into a wall
-    console.log(this.body.onWall());
     if (this.body.onFloor() && this.body.onWall())
     {
         this.scale.x = -(this.scale.x);
-        //this.body.position.x += (2 * this.scale.x);
     }
     
     // if this sprite has moved off the world

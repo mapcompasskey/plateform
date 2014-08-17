@@ -28,7 +28,10 @@ BasicGame.Game = function (game) {
 BasicGame.Game.prototype = {
     
     create: function () {
-            
+        
+        // get a referrence to this state
+        CURRENT_STATE = this;
+        
         // reset properties
         this.map;
         this.layer;
@@ -67,7 +70,30 @@ BasicGame.Game.prototype = {
         this.physics.arcade.overlap(this.player, this.coins, this.resolveObjectCollisions, null, this);
         
         // enemy / level collision
-        this.physics.arcade.collide(this.enemies, this.layer, this.resolveLayerCollisions, null, this);
+        this.physics.arcade.collide(this.enemies, this.layer);
+        
+    },
+    
+    render: function() {
+        
+        Phaser.State.prototype.render.call(this);
+        
+        // draw bounding box
+        if (SHOW_BOUNDING_BOXES)
+        {
+            // player
+            this.game.debug.body(this.player, 'rgba(0,255,255,1.0)', false);
+            
+            // enemies
+            this.enemies.forEach(function(item) {
+                this.game.debug.body(item, 'rgba(255,255,0,1.0)', false);
+            }, this);
+            
+            // coins
+            this.coins.forEach(function(item) {
+                this.game.debug.body(item, 'rgba(0,255,255,1.0)', false);
+            }, this);
+        }
         
     },
     
@@ -187,15 +213,6 @@ BasicGame.Game.prototype = {
         if (obj2.collideWith)
         {
             obj2.collideWith(obj1, this);
-        }
-        
-    },
-    
-    resolveLayerCollisions: function(obj, layer) {
-    
-        if (obj.layerCollision)
-        {
-            obj.layerCollision(layer, this);
         }
         
     },

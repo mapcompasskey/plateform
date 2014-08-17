@@ -36,12 +36,6 @@ Coin.prototype.constructor = Coin;
 */
 Coin.prototype.update = function () {
     
-    // draw bounding box
-    if (SHOW_BOUNDING_BOXES)
-    {
-        this.game.debug.body(this, 'rgba(255,0,0,0.8)', false);
-    }
-    
 };
 
 /**
@@ -60,7 +54,8 @@ Coin.prototype.collideWith = function(other, caller) {
         caller.coinCollected();
         
         // remove the coin
-        this.kill();
+        //this.kill();
+        this.destroy();
     }
     
 };
