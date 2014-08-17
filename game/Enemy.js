@@ -1,8 +1,8 @@
 
 /**
-* @class Player
+* @class Enemy
 *
-* @classdesc Create a new `Player` object. http://docs.phaser.io/Sprite.js.html
+* @classdesc Create a new `Enemy` object. http://docs.phaser.io/Sprite.js.html
 *
 * @constructor
 * @extends Phaser.Sprite
@@ -11,15 +11,15 @@
 * @param {number} y - The y coordinate (in world space) to position the Sprite at.
 * @param {string|Phaser.RenderTexture|Phaser.BitmapData|PIXI.Texture} key - This is the image or texture used by the Sprite during rendering. It can be a string which is a reference to the Cache entry, or an instance of a RenderTexture or PIXI.Texture.
 */
-Player = function (game, x, y) {
+Enemy = function (game, x, y) {
     
     x = x || 0;
     y = y || 0;
-    key = 'spritesheetPlayer';
+    key = 'spritesheetEnemy';
     
     Phaser.Sprite.call(this, game, x, y, key);
     
-    this._walkSpeed = 150;
+    this._walkSpeed = 30;
     this._jumpSpeed = 350;
     this._gravity = 800;
     
@@ -38,7 +38,7 @@ Player = function (game, x, y) {
     
     // sprite physics properties
     this.body.gravity.y = this._gravity;
-    //this.body.collideWorldBounds = true;    
+    this.body.collideWorldBounds = true;
     
     // sprite animations
     this.animations.add('idle', [0]);
@@ -46,23 +46,24 @@ Player = function (game, x, y) {
     this.animations.add('fall', [5]);
     this.animations.add('walk', [1, 2, 3, 2], 5, true);
     
-    this.prevtilevalue = 0;
+    // start sprite walking
+    this._walking = true;
 };
 
-Player.ASSETS = [
-    {type:'spritesheet',key:'spritesheetPlayer',src:'assets/player.png',sheetWidth:30,sheetHeight:30}
+Enemy.ASSETS = [
+    {type:'spritesheet',key:'spritesheetEnemy',src:'assets/enemy.png',sheetWidth:30,sheetHeight:30}
 ];
 
-Player.prototype = Object.create(Phaser.Sprite.prototype);
-Player.prototype.constructor = Player;
+Enemy.prototype = Object.create(Phaser.Sprite.prototype);
+Enemy.prototype.constructor = Enemy;
 
 /**
 * Internal function called by the World update cycle
 *
-* @method Player#update
-* @memberof Player
+* @method Enemy#update
+* @memberof Enemy
 */
-Player.prototype.update = function () {
+Enemy.prototype.update = function () {
     
     this.checkStatus();
     
@@ -77,35 +78,37 @@ Player.prototype.update = function () {
 /**
 * Internal function called by the World postUpdate cycle.
 *
-* @method Player#postUpdate
-* @memberof Player
+* @method Enemy#postUpdate
+* @memberof Enemy
 */
-//Player.prototype.postUpdate = function() {
+//Enemy.prototype.postUpdate = function() {
     //Phaser.Sprite.prototype.postUpdate.call(this);
+    //this.checkPosition();
 //};
 
 /**
-* Check the current status of the Player
+* Check the current status of the Enemy
 *
-* @method Player#checkStatus
-* @memberof Player
+* @method Enemy#checkStatus
+* @memberof Enemy
 */
-Player.prototype.checkStatus = function () {
+Enemy.prototype.checkStatus = function () {
+    
+    this.checkPosition();
     
     this.isJumping();
     this.isMoving();
     this.animate();
-    this.checkPosition();
     
 };
 
 /**
-* Check if the Player is jumping
+* Check if the Enemy is jumping
 *
-* @method Player#isJumping
-* @memberof Player
+* @method Enemy#isJumping
+* @memberof Enemy
 */
-Player.prototype.isJumping = function() {
+Enemy.prototype.isJumping = function() {
     
     if (this._hurting || this._dying)
     {
@@ -114,6 +117,7 @@ Player.prototype.isJumping = function() {
         return;
     }
     
+    /*
     // if standing and just pressed "UP" button
     if (this.body.onFloor() && KEY_JUMP.justPressed())
     {
@@ -140,16 +144,17 @@ Player.prototype.isJumping = function() {
         this._jumping = false;
         this._falling = false;
     }
+    */
     
 };
 
 /**
-* Check if the Player is moving
+* Check if the Enemy is moving
 *
-* @method Player#isMoving
-* @memberof Player
+* @method Enemy#isMoving
+* @memberof Enemy
 */
-Player.prototype.isMoving = function() {
+Enemy.prototype.isMoving = function() {
     
     if (this._hurting || this._dying)
     {
@@ -157,42 +162,26 @@ Player.prototype.isMoving = function() {
         return;
     }
     
-    // if LEFT key is down
-    if (KEY_LEFT.isDown)
-    {
-        this.scale.x = -1;
-        this._walking = true;
-    }
-    // else, if RIGHT key is down
-    else if (KEY_RIGHT.isDown)
-    {
-        this.scale.x = 1;
-        this._walking = true;
-    }
-    else {
-        this._walking = false;
-    }
-    
     // if moving
     if (this._walking)
     {
         this.body.velocity.x = (this._walkSpeed * this.scale.x);
     }
-    // else, if standing stil
+    // else, if standing still
     else
     {
-        this.body.velocity.x = 0;
+        this.body.velocity.x = 0
     }
     
 };
 
 /**
-* Update the Player animation
+* Update the Enemy animation
 *
-* @method Player#animate
-* @memberof Player
+* @method Enemy#animate
+* @memberof Enemy
 */
-Player.prototype.animate = function() {
+Enemy.prototype.animate = function() {
 
     if (this._falling)
     {
@@ -216,22 +205,74 @@ Player.prototype.animate = function() {
 /**
 * Called during object collision
 *
-* @method Player#collideWith
-* @memberof Player
+* @method Enemy#collideWith
+* @memberof Enemy
 * @param {object} - The object that is colliding with this Sprite.
 * @param {Phaser.Game} - The Phaser.Game object calling the method.
 */
-Player.prototype.collideWith = function(other, caller) {
+Enemy.prototype.collideWith = function(other, caller) {
     
 };
 
+Enemy.prototype.layerCollision = function(layer, callback) {
+
+    //console.log(layer);
+    /*
+    if(layerHit.tile.index == 25 || layerHit.tile.index == 35 || layerHit.tile.index == 34 || layerHit.tile.index == 54 || 
+    layerHit.tile.index == 28 || layerHit.tile.index == 38 || layerHit.tile.index == 44 || layerHit.tile.index == 10)
+    {
+
+    if (enemyHit.body.velocity.x == forward && allowedToTurn == true)
+    {
+    timeWhenTurned = this.game.time.now;
+    allowedToTurn = false;
+    enemyHit.body.velocity.x = backwards;
+
+    }
+
+    else if (enemyHit.body.velocity.x == backwards && allowedToTurn == true)
+    {
+    timeWhenTurned = this.game.time.now;
+    allowedToTurn = false;
+    enemyHit.body.velocity.x = forward;
+
+    }
+    }
+
+    timeSinceTurned = this.game.time.elapsedSecondsSince(timeWhenTurned);
+
+    if(timeSinceTurned > 0.06)
+    {
+    allowedToTurn = true;
+    }
+    */
+};
+
 /**
-* Check if the Player is outside the World boundary
+* Check if the Enemy is outside the World boundary
 *
-* @method Player#checkPosition
-* @memberof Player
+* @method Enemy#checkPosition
+* @memberof Enemy
 */
-Player.prototype.checkPosition = function() {
+Enemy.prototype.checkPosition = function() {
+    
+    // if reached the right side of a plateform, turn around
+    if (this.body.onFloor() && ! this._hurting && ! this._jumping && ! this._falling ) {
+        xPos = this.body.position.x + (this.body.velocity.x > 0 ? (this.body.width + 1) : -1);
+        yPos = this.body.position.y + this.body.height + 1;
+        if (GAME_MAP.getTileWorldXY(xPos, yPos, TILESIZE, TILESIZE) === null)
+        {
+            this.scale.x = -(this.scale.x);
+        }
+    }
+    
+    // if walked into a wall
+    console.log(this.body.onWall());
+    if (this.body.onFloor() && this.body.onWall())
+    {
+        this.scale.x = -(this.scale.x);
+        //this.body.position.x += (2 * this.scale.x);
+    }
     
     // if this sprite has moved off the world
     if (this.body.position.x < this.game.world.bounds.x)

@@ -44,6 +44,9 @@ BasicGame.Game.prototype = {
         // add the coins
         this.addCoins();
         
+        // add the Enemies
+        this.addEnemies();
+        
         // add the player
         this.addPlayer();
         
@@ -61,7 +64,10 @@ BasicGame.Game.prototype = {
         this.physics.arcade.collide(this.player, this.layer);
         
         // player / coin collision
-        this.physics.arcade.overlap(this.player, this.coins, this.resolveCollisions, null, this);
+        this.physics.arcade.overlap(this.player, this.coins, this.resolveObjectCollisions, null, this);
+        
+        // enemy / level collision
+        this.physics.arcade.collide(this.enemies, this.layer, this.resolveLayerCollisions, null, this);
         
     },
     
@@ -80,6 +86,7 @@ BasicGame.Game.prototype = {
         // TILED JSON
         // load JSON tilemap data
         this.map = this.add.tilemap('tilemapLevel_JSON');
+        GAME_MAP = this.map;
         
         // the first parameter is the tileset name, as specified in the Tiled map editor (and in the tilemap json file)
         // the second parameter maps this name to the Phaser.Cache key 'imageTiles'
@@ -101,6 +108,7 @@ BasicGame.Game.prototype = {
         // create a layer from the Tiled map editor JSON file
         // use the layer's name from json file to call it
         this.layer = this.map.createLayer('Tile Layer 1');
+        GAME_LAYER = this.layer;
         
         // resize the game world to match the layer dimensions
         this.layer.resizeWorld();
@@ -112,7 +120,7 @@ BasicGame.Game.prototype = {
         // add a group of coins
         this.coins = this.add.group();
         
-        // enable physics on coins
+        // enable physics on group
         this.coins.enableBody = true;
         
         // add some coins
@@ -126,11 +134,36 @@ BasicGame.Game.prototype = {
         
     },
     
+    addEnemies: function() {
+    
+        // add a group of enemies
+        this.enemies = this.add.group();
+        
+        // enabled physics on group
+        this.enemies.enableBody = true;
+        
+        // add some enemies
+        var xPos, yPos = 0;
+        
+        xPos = (TILESIZE * 10);
+        yPos = (TILESIZE * 8);
+        this.enemies.add(new Enemy(this.game, xPos, yPos));
+        
+        xPos = (TILESIZE * 5);
+        yPos = (TILESIZE * 18);
+        this.enemies.add(new Enemy(this.game, xPos, yPos));
+        
+        xPos = (TILESIZE * 21);
+        yPos = (TILESIZE * 12);
+        this.enemies.add(new Enemy(this.game, xPos, yPos));
+        
+    },
+    
     addPlayer: function () {
         
         // add the player
-        var xPos = (TILESIZE * 4);
-        var yPos = (TILESIZE * 3 - 30);
+        var xPos = (TILESIZE * 5);
+        var yPos = (TILESIZE * 8);
         this.player = new Player(this.game, xPos, yPos);
         this.add.existing(this.player);
         PLAYER = this.player;
@@ -145,7 +178,7 @@ BasicGame.Game.prototype = {
         
     },
     
-    resolveCollisions: function (obj1, obj2) {
+    resolveObjectCollisions: function (obj1, obj2) {
     
         if (obj1.collideWith)
         {
@@ -154,6 +187,15 @@ BasicGame.Game.prototype = {
         if (obj2.collideWith)
         {
             obj2.collideWith(obj1, this);
+        }
+        
+    },
+    
+    resolveLayerCollisions: function(obj, layer) {
+    
+        if (obj.layerCollision)
+        {
+            obj.layerCollision(layer, this);
         }
         
     },

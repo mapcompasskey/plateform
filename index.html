@@ -11,6 +11,7 @@
     <script src="game/MainMenu.js"></script>
     <script src="game/Game.js"></script>
     <script src="game/Player.js"></script>
+    <script src="game/Enemy.js"></script>
     <script src="game/Coin.js"></script>
     <style>
         body {
@@ -41,14 +42,6 @@
     <div id="playhead" class="playing"></div>
     <script type="text/javascript">
         window.onload = function () {
-            
-            // define constancts
-            var TILESIZE;
-            var KEY_LEFT;
-            var KEY_RIGHT;
-            var KEY_JUMP;
-            var PLAYER;
-            var SHOW_BOUNDING_BOXES;
             
             // create the Phaser game
             var game = new Phaser.Game(800, 600, Phaser.AUTO);
