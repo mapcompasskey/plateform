@@ -77,6 +77,7 @@ Player.prototype.update = function () {
     
     this.checkPosition();
     this.checkStatus();
+    //console.log(this.body.facing);
     
 };
 
@@ -175,14 +176,29 @@ Player.prototype.isCrouching = function() {
         this._crouching = false;
         this.updateCollisionBox();
         
-        this._canDrop = true;
-        this._dropTimer = 0;
+        //this._canDrop = true;
+        //this._dropTimer = 0;
+        
+        // is left most edge of sprite on a cloud tile
+        var tileLeft = GAME_MAP.getTileWorldXY((this.body.position.x - 5), (this.body.position.y + this.body.height), TILESIZE, TILESIZE, GAME_LAYER);
+        tileLeft = (tileLeft ? tileLeft.index : 0);
+        var leftSide = (tileLeft == 0 || tileLeft == 2 ? true : false);
+        
+        // is right most edge of sprite on a cloud tile
+        var tileRight = GAME_MAP.getTileWorldXY((this.body.position.x + this.body.width + 5), (this.body.position.y + this.body.height), TILESIZE, TILESIZE, GAME_LAYER);
+        tileRight = (tileRight ? tileRight.index : 0);
+        var rightSide = (tileRight == 0 || tileRight == 2 ? true : false);
+        
+        //console.log(tileLeft, tileRight);
+        //console.log(leftSide, rightSide);
+        
         // check if this sprite is on a cloud tile
-        //if (GAME_MAP.getTileBelow())
-        //{
-            //this._canDrop = true;
-            //this._dropTimer = 0;
-        //}
+        if (leftSide && rightSide)
+        {
+            this._canDrop = true;
+            this._dropTimer = 0;
+        }
+        
     }
     
 };
