@@ -11,11 +11,11 @@
 * @param {number} y - The y coordinate (in world space) to position the Sprite at.
 * @param {string|Phaser.RenderTexture|Phaser.BitmapData|PIXI.Texture} key - This is the image or texture used by the Sprite during rendering. It can be a string which is a reference to the Cache entry, or an instance of a RenderTexture or PIXI.Texture.
 */
-Enemy = function (game, x, y) {
+Enemy = function (game, x, y, key) {
     
     x = x || 0;
     y = y || 0;
-    key = 'spritesheetEnemy';
+    key = key || 'spritesheetEnemy';
     
     Phaser.Sprite.call(this, game, x, y, key);
     

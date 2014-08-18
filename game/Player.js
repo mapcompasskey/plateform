@@ -180,12 +180,14 @@ Player.prototype.isCrouching = function() {
         //this._dropTimer = 0;
         
         // is left most edge of sprite on a cloud tile
-        var tileLeft = GAME_MAP.getTileWorldXY((this.body.position.x - 5), (this.body.position.y + this.body.height), TILESIZE, TILESIZE, GAME_LAYER);
+        //var tileLeft = GAME_MAP.getTileWorldXY((this.body.position.x - 5), (this.body.position.y + this.body.height), TILESIZE, TILESIZE, GAME_LAYER);
+        var tileLeft = GAME_MAP.getTileWorldXY((this.body.position.x), (this.body.position.y + this.body.height), TILESIZE, TILESIZE, GAME_LAYER);
         tileLeft = (tileLeft ? tileLeft.index : 0);
         var leftSide = (tileLeft == 0 || tileLeft == 2 ? true : false);
         
         // is right most edge of sprite on a cloud tile
-        var tileRight = GAME_MAP.getTileWorldXY((this.body.position.x + this.body.width + 5), (this.body.position.y + this.body.height), TILESIZE, TILESIZE, GAME_LAYER);
+        //var tileRight = GAME_MAP.getTileWorldXY((this.body.position.x + this.body.width + 5), (this.body.position.y + this.body.height), TILESIZE, TILESIZE, GAME_LAYER);
+        var tileRight = GAME_MAP.getTileWorldXY((this.body.position.x + this.body.width), (this.body.position.y + this.body.height), TILESIZE, TILESIZE, GAME_LAYER);
         tileRight = (tileRight ? tileRight.index : 0);
         var rightSide = (tileRight == 0 || tileRight == 2 ? true : false);
         
@@ -219,7 +221,7 @@ Player.prototype.isJumping = function() {
     }
     
     // if standing and just pressed "UP" button
-    if (this.body.onFloor() && KEY_JUMP.justPressed())
+    if ((this.body.onFloor() || this.body.touching.down) && KEY_JUMP.justPressed())
     {
         this.body.velocity.y = -this._jumpSpeed;
         this._jumping = true;
@@ -227,7 +229,7 @@ Player.prototype.isJumping = function() {
     }
     
     // else, if falling
-    else if ( ! this.body.onFloor() && this.body.velocity.y > 0)
+    else if ( ! this.body.onFloor() && ! this.body.touching.down && this.body.velocity.y > 0)
     {
         this._falling = true;
     }
@@ -239,7 +241,7 @@ Player.prototype.isJumping = function() {
     }
     
     // else, if standing on something while jumping/falling
-    else if (this.body.onFloor() && (this._jumping || this._falling))
+    else if ((this.body.onFloor() || this.body.touching.down) && (this._jumping || this._falling))
     {
         this._jumping = false;
         this._falling = false;

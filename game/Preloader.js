@@ -24,6 +24,7 @@ BasicGame.Preloader.prototype = {
         this.load.tilemap('tilemapLevel_JSON', 'assets/level.json', null, Phaser.Tilemap.TILED_JSON);
         this.loadAssets(Player.ASSETS);
         this.loadAssets(Enemy.ASSETS);
+        this.loadAssets(Enemy2.ASSETS);
         this.loadAssets(Coin.ASSETS);
 	},
     

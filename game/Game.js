@@ -73,7 +73,13 @@ BasicGame.Game.prototype = {
         this.physics.arcade.collide(this.enemies, this.layer);
         
         // player / enemy collision
-        //this.physics.arcade.collide(this.player, this.enemies);
+        this.physics.arcade.overlap(this.player, this.enemies);
+        
+        // enemy2 / level collision
+        this.physics.arcade.collide(this.enemies2, this.layer);
+        
+        // player / enemy2 collision
+        this.physics.arcade.collide(this.player, this.enemies2);
         
     },
     
@@ -89,6 +95,11 @@ BasicGame.Game.prototype = {
             
             // enemies
             this.enemies.forEach(function(item) {
+                this.game.debug.body(item, 'rgba(255,255,0,1.0)', false);
+            }, this);
+            
+            // enemies 2
+            this.enemies2.forEach(function(item) {
                 this.game.debug.body(item, 'rgba(255,255,0,1.0)', false);
             }, this);
             
@@ -165,18 +176,16 @@ BasicGame.Game.prototype = {
     
     addEnemies: function() {
     
-        // add a group of enemies
+        // add a group of enemies and enabled physics on group
         this.enemies = this.add.group();
-        
-        // enabled physics on group
         this.enemies.enableBody = true;
         
         // add some enemies
         var xPos, yPos = 0;
         
-        xPos = (TILESIZE * 10);
-        yPos = (TILESIZE * 8);
-        this.enemies.add(new Enemy(this.game, xPos, yPos));
+        //xPos = (TILESIZE * 10);
+        //yPos = (TILESIZE * 8);
+        //this.enemies.add(new Enemy(this.game, xPos, yPos));
         
         xPos = (TILESIZE * 5);
         yPos = (TILESIZE * 18);
@@ -185,6 +194,14 @@ BasicGame.Game.prototype = {
         xPos = (TILESIZE * 21);
         yPos = (TILESIZE * 12);
         this.enemies.add(new Enemy(this.game, xPos, yPos));
+        
+        // add a group of large enemies and enabled physics on group
+        this.enemies2 = this.add.group();
+        this.enemies2.enableBody = true;
+        
+        xPos = (TILESIZE * 10);
+        yPos = (TILESIZE * 8);
+        this.enemies2.add(new Enemy2(this.game, xPos, yPos));
         
     },
     
