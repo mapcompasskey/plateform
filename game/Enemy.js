@@ -39,6 +39,7 @@ Enemy = function (game, x, y) {
     // sprite physics properties
     this.body.gravity.y = this._gravity;
     this.body.collideWorldBounds = true;
+    //this.body.immovable = true;
     
     // sprite animations
     this.animations.add('idle', [0]);

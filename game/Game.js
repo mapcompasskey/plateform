@@ -72,6 +72,9 @@ BasicGame.Game.prototype = {
         // enemy / level collision
         this.physics.arcade.collide(this.enemies, this.layer);
         
+        // player / enemy collision
+        //this.physics.arcade.collide(this.player, this.enemies);
+        
     },
     
     render: function() {

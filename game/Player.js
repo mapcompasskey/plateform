@@ -26,8 +26,16 @@ Player = function (game, x, y) {
     this._walking = false;
     this._jumping = false;
     this._falling = false;
+    this._crouching = false;
     this._hurting = false;
     this._dying = false;
+    
+    this._dropTimer = 0;
+    this._canDrop = false;
+    this._collideDown = true;
+    
+    this._dropping = false;
+    this._droppingFrom = 0;
     
     // enable physics on the sprite
     game.physics.arcade.enable(this);
@@ -38,12 +46,16 @@ Player = function (game, x, y) {
     
     // sprite physics properties
     this.body.gravity.y = this._gravity;
-    //this.body.collideWorldBounds = true;    
+    //this.body.collideWorldBounds = true;
+    //this.body.immovable = true;
+    //this.body.blocked.up = false;
+    //this.body.checkCollision.up = false;
     
     // sprite animations
     this.animations.add('idle', [0]);
     this.animations.add('jump', [4]);
     this.animations.add('fall', [5]);
+    this.animations.add('crouch', [6]);
     this.animations.add('walk', [1, 2, 3, 2], 5, true);
     
 };
@@ -63,6 +75,7 @@ Player.prototype.constructor = Player;
 */
 Player.prototype.update = function () {
     
+    this.checkPosition();
     this.checkStatus();
     
 };
@@ -85,11 +98,92 @@ Player.prototype.update = function () {
 */
 Player.prototype.checkStatus = function () {
     
-    this.checkPosition();
+    // update downward collision
+    this.body.checkCollision.down = this._collideDown;
     
+    this.isCrouching();
     this.isJumping();
     this.isMoving();
     this.animate();
+    
+};
+
+/**
+* Check if the Player is crouching
+*
+* @method Player#isCrouching
+* @memberof Player
+*/
+Player.prototype.isCrouching = function() {
+    
+    if (this._hurting || this._dying)
+    {
+        return;
+    }
+    
+    // if dropping through the plateform
+    if (this._dropping)
+    {
+        // if not checking downward collision
+        if ( ! this._collideDown)
+        {
+            if ((this.body.position.y - this._droppingFrom) > (this.body.height + 1))
+            {
+                this._collideDown = true;
+            }
+        }
+        
+        // else, if checking downward collision and just landed on a surface
+        else if (this._collideDown && (this.body.onFloor() || this.body.touching.down))
+        {
+            this._dropping = false;
+        }
+        
+        return;
+    }
+    
+    // if CROUCH key was released
+    if (this._canDrop)
+    {
+        this._dropTimer += this.game.time.elapsed;
+        
+        // if the player presses CROUCH again within 200th of a second
+        if ( ! this._crouching && this.body.onFloor() && KEY_CROUCH.justPressed() && this._dropTimer < 200)
+        {
+            this._dropTimer = 0;
+            this._canDrop = false;
+            this._dropping = true;
+            this.body.velocity.x = 0;
+            this._collideDown = false;
+            this._droppingFrom = this.body.position.y;
+            return;
+        }
+    }
+    
+    // if standing and just pressed the CROUCH button
+    if ( ! this._crouching && this.body.onFloor() && KEY_CROUCH.justPressed())
+    {
+        this._crouching = true;
+        this.body.velocity.x = 0;
+        this.updateCollisionBox();
+        return;
+    }
+    
+    // else, if crouching and released the CROUCH key
+    else if (this._crouching && KEY_CROUCH.justReleased())
+    {
+        this._crouching = false;
+        this.updateCollisionBox();
+        
+        this._canDrop = true;
+        this._dropTimer = 0;
+        // check if this sprite is on a cloud tile
+        //if (GAME_MAP.getTileBelow())
+        //{
+            //this._canDrop = true;
+            //this._dropTimer = 0;
+        //}
+    }
     
 };
 
@@ -101,7 +195,7 @@ Player.prototype.checkStatus = function () {
 */
 Player.prototype.isJumping = function() {
     
-    if (this._hurting || this._dying)
+    if (this._hurting || this._dying || this._crouching)
     {
         this._jumping = false;
         this._falling = false;
@@ -116,20 +210,20 @@ Player.prototype.isJumping = function() {
         return;
     }
     
-    // if falling
-    if ( ! this.body.onFloor() && this.body.velocity.y > 0)
+    // else, if falling
+    else if ( ! this.body.onFloor() && this.body.velocity.y > 0)
     {
         this._falling = true;
     }
     
-    // reduce jumping height
-    if (this._jumping && ! this._falling && KEY_JUMP.justReleased())
+    // else, if JUMP key released while jumping
+    else if (this._jumping && KEY_JUMP.justReleased())
     {
         this.body.velocity.y = (this.body.velocity.y / 4);
     }
     
-    // if standing on something while jumping/falling
-    if (this.body.onFloor() && (this._jumping || this._falling))
+    // else, if standing on something while jumping/falling
+    else if (this.body.onFloor() && (this._jumping || this._falling))
     {
         this._jumping = false;
         this._falling = false;
@@ -145,7 +239,7 @@ Player.prototype.isJumping = function() {
 */
 Player.prototype.isMoving = function() {
     
-    if (this._hurting || this._dying)
+    if (this._hurting || this._dying || this._crouching || this._dropping)
     {
         this._walking = false;
         return;
@@ -188,7 +282,11 @@ Player.prototype.isMoving = function() {
 */
 Player.prototype.animate = function() {
 
-    if (this._falling)
+    if (this._crouching)
+    {
+        this.animations.play('crouch');
+    }
+    else if (this._falling)
     {
         this.animations.play('fall');
     }
@@ -241,6 +339,25 @@ Player.prototype.checkPosition = function() {
     if (this.body.position.y > this.game.world.bounds.height)
     {
         this.body.position.y = 0;
+    }
+    
+};
+
+/**
+* Update the Player's hit box
+*
+* @method Player#updateCollisionBox
+* @memberof Player
+*/
+Player.prototype.updateCollisionBox = function() {
+    
+    if (this._crouching)
+    {
+        this.body.setSize(16, 20, 0, 0);
+    }
+    else
+    {
+        this.body.setSize(16, 28, 0, 0);
     }
     
 };

@@ -18,6 +18,7 @@ BasicGame.Boot.prototype = {
         KEY_LEFT = this.input.keyboard.addKey(Phaser.Keyboard.LEFT);
         KEY_RIGHT = this.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
         KEY_JUMP = this.input.keyboard.addKey(Phaser.Keyboard.X);
+        KEY_CROUCH = this.input.keyboard.addKey(Phaser.Keyboard.DOWN);
         PLAYER = null;
         GAME_LAYER = null;
         GAME_MAP = null;
