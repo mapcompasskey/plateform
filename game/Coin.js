@@ -19,6 +19,8 @@ Coin = function (game, x, y) {
     
     Phaser.Sprite.call(this, game, x, y, key);
     
+    this.anchor.setTo(0.5, 1);
+    
 };
 
 Coin.ASSETS = [

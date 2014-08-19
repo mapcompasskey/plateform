@@ -21,6 +21,7 @@ BasicGame.Boot.prototype = {
         KEY_CROUCH = this.input.keyboard.addKey(Phaser.Keyboard.DOWN);
         PLAYER = null;
         GAME_LAYER = null;
+        GAME_LAYER_CLOUDS = null;
         GAME_MAP = null;
         SHOW_BOUNDING_BOXES = true;
         CURRENT_STATE = this;

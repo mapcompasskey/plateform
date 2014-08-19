@@ -78,6 +78,7 @@ Player.prototype.update = function () {
     this.checkPosition();
     this.checkStatus();
     //console.log(this.body.facing);
+    //console.log(this.body.blocked.down);
     
 };
 
@@ -122,7 +123,7 @@ Player.prototype.isCrouching = function() {
         return;
     }
     
-    // if dropping through the plateform
+    // if dropping through the platform
     if (this._dropping)
     {
         // if not checking downward collision
@@ -179,6 +180,7 @@ Player.prototype.isCrouching = function() {
         //this._canDrop = true;
         //this._dropTimer = 0;
         
+        /*
         // is left most edge of sprite on a cloud tile
         //var tileLeft = GAME_MAP.getTileWorldXY((this.body.position.x - 5), (this.body.position.y + this.body.height), TILESIZE, TILESIZE, GAME_LAYER);
         var tileLeft = GAME_MAP.getTileWorldXY((this.body.position.x), (this.body.position.y + this.body.height), TILESIZE, TILESIZE, GAME_LAYER);
@@ -200,6 +202,7 @@ Player.prototype.isCrouching = function() {
             this._canDrop = true;
             this._dropTimer = 0;
         }
+        */
         
     }
     

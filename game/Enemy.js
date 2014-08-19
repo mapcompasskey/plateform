@@ -218,11 +218,13 @@ Enemy.prototype.collideWith = function(other, caller) {
 */
 Enemy.prototype.checkPosition = function() {
     
-    // if reached the right side of a plateform, turn around
+    // if reached the right side of a platform, turn around
     if (this.body.onFloor() && ! this._hurting && ! this._jumping && ! this._falling ) {
         xPos = this.body.position.x + (this.body.velocity.x > 0 ? (this.body.width + 1) : -1);
         yPos = this.body.position.y + this.body.height + 1;
-        if (GAME_MAP.getTileWorldXY(xPos, yPos, TILESIZE, TILESIZE) === null)
+        if (GAME_MAP.getTileWorldXY(xPos, yPos, TILESIZE, TILESIZE, GAME_LAYER) === null
+            && GAME_MAP.getTileWorldXY(xPos, yPos, TILESIZE, TILESIZE, GAME_LAYER_CLOUDS) === null
+        )
         {
             this.scale.x = -(this.scale.x);
         }

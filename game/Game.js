@@ -35,7 +35,10 @@ BasicGame.Game.prototype = {
         // reset properties
         this.map;
         this.layer;
+        this.layer_clouds;
         this.player;
+        this.enemies;
+        this.enemies2;
         this.coins;
         this.coinScore = 0;
         this.coinScoreText;
@@ -64,19 +67,22 @@ BasicGame.Game.prototype = {
     update: function () {
         
         // player / level collision
-        this.physics.arcade.collide(this.player, this.layer);
+        this.physics.arcade.collide(this.player, GAME_LAYER);
+        this.physics.arcade.collide(this.player, GAME_LAYER_CLOUDS);
         
         // player / coin collision
         this.physics.arcade.overlap(this.player, this.coins, this.resolveObjectCollisions, null, this);
         
         // enemy / level collision
-        this.physics.arcade.collide(this.enemies, this.layer);
+        this.physics.arcade.collide(this.enemies, GAME_LAYER);
+        this.physics.arcade.collide(this.enemies, GAME_LAYER_CLOUDS);
         
         // player / enemy collision
         this.physics.arcade.overlap(this.player, this.enemies);
         
         // enemy2 / level collision
-        this.physics.arcade.collide(this.enemies2, this.layer);
+        this.physics.arcade.collide(this.enemies2, GAME_LAYER);
+        this.physics.arcade.collide(this.enemies2, GAME_LAYER_CLOUDS);
         
         // player / enemy2 collision
         this.physics.arcade.collide(this.player, this.enemies2);
@@ -126,14 +132,30 @@ BasicGame.Game.prototype = {
         // TILED JSON
         // load JSON tilemap data
         this.map = this.add.tilemap('tilemapLevel_JSON');
-        GAME_MAP = this.map;
+        GAME_MAP = this.map; 
         
         // the first parameter is the tileset name, as specified in the Tiled map editor (and in the tilemap json file)
         // the second parameter maps this name to the Phaser.Cache key 'imageTiles'
         this.map.addTilesetImage('tileset', 'imageTiles');
         
+        // create a layer from the Tiled map editor JSON file
+        // use the layer's name from json file to call it
+        this.layer = this.map.createLayer('Tile Layer 1');
+        this.layer.resizeWorld();
+        GAME_LAYER = this.layer;
+        
+        this.layer_clouds = this.map.createLayer('Tile Layer 2');
+        this.layer_clouds.resizeWorld();
+        this.layer_clouds.enableBody = true;
+        this.game.physics.arcade.enable(this.layer_clouds, Phaser.Physics.ARCADE, true);
+        GAME_LAYER_CLOUDS = this.layer_clouds;
+        
         // set tile collision
-        this.map.setCollision([1,2]);
+        this.map.setCollision([1,2], true, this.layer);
+        this.map.setCollision([1,2], true, this.layer_clouds);
+        
+        /*
+        this.map.setCollision([1,2], true, this.layer);
         this.map.forEach(function (t) {
             if (t)
             {
@@ -144,14 +166,39 @@ BasicGame.Game.prototype = {
                 }
             }
         });
+        */
         
-        // create a layer from the Tiled map editor JSON file
-        // use the layer's name from json file to call it
-        this.layer = this.map.createLayer('Tile Layer 1');
-        GAME_LAYER = this.layer;
+        this.map.forEach(function (t) {
+            if (t)
+            {
+                if (t.index == 2)
+                {
+                    // cloud tile (can jump up through)
+                    t.setCollision(false, false, true, false); // (left, right, up, down)
+                }
+            }
+        }, null, 0, 0, (this.layer_clouds.width / TILESIZE), (this.layer_clouds.height / TILESIZE), this.layer_clouds);
+        //forEach(callback, context, x, y, width, height, layer)
         
-        // resize the game world to match the layer dimensions
-        this.layer.resizeWorld();
+        //console.log(this.layer_clouds.getTiles());
+        
+        /*
+        this.layer1 = this.map.createLayer('background'); //no collision here
+        this.layer2 = this.map.createLayer('obstacles'); //collides
+        this.layer1.resizeWorld();
+        this.layer2.resizeWorld();
+        game.physics.arcade.enable(this.layer2);
+        this.map.setCollisionByExclusion([],true,this.layer2); //collides on every tile
+        */
+        
+        /*
+        this.map_clouds = this.add.tilemap('tilemapLevel_JSON');
+        this.map_clouds.setCollision([1,2]);
+        this.layer_clouds = this.map_clouds.createLayer('Tile Layer 2');
+        this.layer_clouds.enableBody = true;
+        this.game.physics.arcade.enable(this.layer_clouds, Phaser.Physics.ARCADE, true);
+        GAME_LAYER_CLOUDS = this.layer_clouds;
+        */
         
     },
     
@@ -168,7 +215,7 @@ BasicGame.Game.prototype = {
         for (var i = 0; i < 7; i++)
         {
             xPos = (TILESIZE * (i * 2 + 16));
-            yPos = (TILESIZE * 7 - 14);
+            yPos = (TILESIZE * 12);
             this.coins.add(new Coin(this.game, xPos, yPos), true);
         }
         
@@ -188,11 +235,11 @@ BasicGame.Game.prototype = {
         //this.enemies.add(new Enemy(this.game, xPos, yPos));
         
         xPos = (TILESIZE * 5);
-        yPos = (TILESIZE * 18);
+        yPos = (TILESIZE * 23);
         this.enemies.add(new Enemy(this.game, xPos, yPos));
         
         xPos = (TILESIZE * 21);
-        yPos = (TILESIZE * 12);
+        yPos = (TILESIZE * 17);
         this.enemies.add(new Enemy(this.game, xPos, yPos));
         
         // add a group of large enemies and enabled physics on group
@@ -200,7 +247,7 @@ BasicGame.Game.prototype = {
         this.enemies2.enableBody = true;
         
         xPos = (TILESIZE * 10);
-        yPos = (TILESIZE * 8);
+        yPos = (TILESIZE * 13);
         this.enemies2.add(new Enemy2(this.game, xPos, yPos));
         
     },
@@ -209,7 +256,7 @@ BasicGame.Game.prototype = {
         
         // add the player
         var xPos = (TILESIZE * 5);
-        var yPos = (TILESIZE * 8);
+        var yPos = (TILESIZE * 13);
         this.player = new Player(this.game, xPos, yPos);
         this.add.existing(this.player);
         PLAYER = this.player;

@@ -50,7 +50,6 @@ Enemy2 = function (game, x, y, key) {
     
     // start sprite walking
     this._walking = true;
-    console.log('enemy2');
     
 };
 
